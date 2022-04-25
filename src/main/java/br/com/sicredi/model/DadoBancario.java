@@ -1,6 +1,4 @@
-package br.com.sicredi;
-
-import java.math.BigDecimal;
+package br.com.sicredi.model;
 
 public class DadoBancario {
 

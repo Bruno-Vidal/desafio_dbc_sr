@@ -1,4 +1,4 @@
-package br.com.sicredi;
+package br.com.sicredi.service;
 
 import java.util.ArrayList;
 import java.util.List;

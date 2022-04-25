@@ -1,4 +1,4 @@
-package br.com.sicredi;
+package br.com.sicredi.model;
 
 public enum StatusConta {
     A,

@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 
@@ -28,7 +29,7 @@ class ValidadorTest {
     @BeforeEach
     public void before() throws Exception {
 
-        doNothing().when(runner).run(isA(String.class));
+        doNothing().when(runner).run(any());
     }
 
     @Test

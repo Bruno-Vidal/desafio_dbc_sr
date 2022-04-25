@@ -1,8 +1,7 @@
 package br.com.sicredi.service;
 
-import br.com.sicredi.DadoBancario;
-import br.com.sicredi.ReceitaService;
-import br.com.sicredi.StatusConta;
+import br.com.sicredi.model.DadoBancario;
+import br.com.sicredi.model.StatusConta;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
