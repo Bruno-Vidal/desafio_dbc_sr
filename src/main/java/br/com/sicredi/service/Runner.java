@@ -1,93 +1,77 @@
 package br.com.sicredi.service;
 
 import br.com.sicredi.model.DadoBancario;
-import br.com.sicredi.model.StatusConta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@ConditionalOnProperty(prefix = "receita.autorun", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class Runner implements CommandLineRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(Runner.class);
 
-    public Runner(Validador validador) {
+
+    public Runner(Validador validador, DadoBancarioReaderService dadoBancarioReaderService, ReceitaService receitaService, DadoBancarioWriterService dadoBancarioWriterService) {
         this.validador = validador;
+        this.dadoBancarioReaderService = dadoBancarioReaderService;
+        this.receitaService = receitaService;
+        this.dadoBancarioWriterService = dadoBancarioWriterService;
     }
 
     private final Validador validador;
+    private final DadoBancarioReaderService dadoBancarioReaderService;
+    private final ReceitaService receitaService;
+    private final DadoBancarioWriterService dadoBancarioWriterService;
 
     @Override
     public void run(String... args) throws Exception {
 
-        validador.validar(args);
-
+        if( !validador.validar(args)) {
+            throw new RuntimeException("parametros de entrada invalido !!!");
+        }
         String path = args[0];
 
-        ReceitaService receitaService = new ReceitaService();
+        List<DadoBancario> dadosBancario = dadoBancarioReaderService.read(path);
 
-        System.out.println(path);
-        BufferedReader reader = new BufferedReader(new FileReader(path));
-        reader.readLine(); // TODO split first line
-        List<DadoBancario> dadosBancario = new ArrayList<>();
-        while (reader.ready()) {
-            String[] data = reader.readLine().split(";");
-            DadoBancario dadoBancario = new DadoBancario();
-            dadoBancario.setAgencia(data[0]);
-            dadoBancario.setConta(data[1].replaceAll("[^\\d.]", ""));
-            dadoBancario.setSaldo(Double.parseDouble(data[2].replace(",", ".")));
-            dadoBancario.setStatus(StatusConta.valueOf(data[3]));
-            dadosBancario.add(dadoBancario);
-        }
-        reader.close();
+        dadosBancario = processBatch(dadosBancario);
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path.replaceAll("\\.csv","")+"_result.csv"));
-        writer.write("agencia;conta;saldo;status;processado");
-        nextLine(writer);
-        DecimalFormat df = new DecimalFormat("0.00");
-        for (DadoBancario dado : dadosBancario
-        ) {
+        String resultPath = dadoBancarioWriterService.writer(dadosBancario, path);
 
-            boolean processado = receitaService.atualizarConta(
-                    dado.getAgencia(),
-                    dado.getConta(),
-                    dado.getSaldo(),
-                    dado.getStatus().name()
+        logger.info("Processo realizado com sucesso: \n Arquivo de resultado: {}", resultPath);
+
+    }
+
+    private List<DadoBancario> processBatch(List<DadoBancario> dadosBancario) {
+        return dadosBancario
+                .stream()
+                .peek(dadoBancario -> {
+                    boolean processado = atualizarReceita(dadoBancario);
+                    dadoBancario.setProcessado(processado);
+                }).collect(Collectors.toList());
+    }
+
+    private boolean atualizarReceita(DadoBancario dadoBancario) {
+        boolean processado;
+        try {
+            processado = receitaService.atualizarConta(
+                    dadoBancario.getAgencia(),
+                    dadoBancario.getConta(),
+                    dadoBancario.getSaldo(),
+                    dadoBancario.getStatus().name()
             );
-
-            dado.setProcessado(processado);
-            writerSplit(writer,dado.getAgencia());
-            writerSplit(writer,dado.getConta().substring(0,5) + "-" + dado.getConta().charAt(5));
-            writerSplit(writer,df.format(dado.getSaldo()).replace(".",","));
-            writerSplit(writer,dado.getStatus().name());
-            writerFinish(writer,dado.getProcessado());
+        } catch (InterruptedException | RuntimeException e) {
+            processado = false;
         }
 
-
-
-
-        writer.close();
+        return processado;
     }
 
-    private void writerFinish(BufferedWriter writer, Boolean text) throws IOException {
-        writer.write(text.toString());
-        nextLine(writer);
-    }
-
-    private void writerSplit(BufferedWriter writer, String text) throws IOException {
-        writer.write(text + ";");
-    }
-
-    private void nextLine(BufferedWriter writer) throws IOException {
-        writer.write("\n");
-    }
 
 }
 

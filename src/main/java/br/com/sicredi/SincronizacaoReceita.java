@@ -29,19 +29,8 @@ agencia;conta;saldo;status
 */
 package br.com.sicredi;
 
-import br.com.sicredi.service.Validador;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 public class SincronizacaoReceita  {

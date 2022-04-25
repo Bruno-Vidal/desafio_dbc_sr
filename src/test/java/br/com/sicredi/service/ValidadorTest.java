@@ -1,36 +1,20 @@
 package br.com.sicredi.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 class ValidadorTest {
 
     @InjectMocks
     private Validador validador;
-
-    @MockBean
-    private Runner runner;
-
-    @BeforeEach
-    public void before() throws Exception {
-
-        doNothing().when(runner).run(any());
-    }
 
     @Test
     @DisplayName("validação da ausencia de parametros")

@@ -10,7 +10,7 @@ import java.io.File;
 @Component
 public class Validador {
 
-    private static final Logger logger = LoggerFactory.getLogger(SincronizacaoReceita.class);
+    private static final Logger logger = LoggerFactory.getLogger(Validador.class);
     private static final String EXTENSAO = "csv";
 
     public boolean validar(String... args) {
