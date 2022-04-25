@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -31,5 +32,15 @@ class DadoBancarioReaderServiceTest {
         assertTrue(dadoBancarios.size() > 0);
         assertNotNull(dadoBancarios);
         assertFalse(dadoBancarios.isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("validar leitura e mapeamento de csv com erro")
+    public void validarleituraArquivoError() {
+
+        Path path = Paths.get("src/test/resources/csv/receita_fail_21_04_2022.csv");
+
+        assertThrows(Exception.class,() ->dadoBancarioReaderService.read(path.toAbsolutePath().toString()));
     }
 }

@@ -14,20 +14,20 @@ public class Validador {
 
     public boolean validar(String... args) {
         if(args.length < 1) {
-            logger.error("Erro ao executar: para o processo acontecer é necessario informar o endereço do arquivo\n ex: \"C:\\sicred\\receita_21_04_2022.csv\" ");
+            logger.error("Erro ao executar: para o processo acontecer eh necessario informar o endereco do arquivo\n ex: \"C:\\sicred\\receita_21_04_2022.csv\" ");
             return false;
         }
 
         String path  = args[0];
 
         if(! path.endsWith(EXTENSAO)) {
-            logger.error("Erro ao executar: a extensão do arquivo deve ser \"{}\"", EXTENSAO);
+            logger.error("Erro ao executar: a extensao do arquivo deve ser \"{}\"", EXTENSAO);
             return false;
         }
 
         File file = new File(path);
         if (! file.isFile()) {
-            logger.error("Erro ao executar: o endereço deve ser referente a um arquivo");
+            logger.error("Erro ao executar: o endereco deve ser referente a um arquivo");
             return false;
         }
 

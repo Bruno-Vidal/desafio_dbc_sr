@@ -32,15 +32,19 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        logger.info("validando arquivo de entrada");
         if( !validador.validar(args)) {
             throw new RuntimeException("parametros de entrada invalido !!!");
         }
         String path = args[0];
 
+        logger.info("extraindos dados do arquivo: {}", path);
         List<DadoBancario> dadosBancario = dadoBancarioReaderService.read(path);
 
+        logger.info("iniciando processamento em lote de atualizacao de dados na Receita Federal.");
         dadosBancario = processBatch(dadosBancario);
 
+        logger.info("Montando arquivo de saida.");
         String resultPath = dadoBancarioWriterService.writer(dadosBancario, path);
 
         logger.info("Processo realizado com sucesso: \n Arquivo de resultado: {}", resultPath);
@@ -66,6 +70,7 @@ public class Runner implements CommandLineRunner {
                     dadoBancario.getStatus().name()
             );
         } catch (InterruptedException | RuntimeException e) {
+            logger.error("Erro de comunicacao com a Receita. \nagencia: {}\nconta: {}", dadoBancario.getAgencia(), dadoBancario.getConta());
             processado = false;
         }
 

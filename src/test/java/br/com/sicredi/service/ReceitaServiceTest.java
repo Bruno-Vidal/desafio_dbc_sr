@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class ReceitaServiceTest {
@@ -14,7 +14,7 @@ class ReceitaServiceTest {
 
 
     @Test
-    public void test() throws InterruptedException {
+    public void sucessoAtualizacaoConta() throws InterruptedException {
         boolean processado = receitaService.atualizarConta("0000", "000000", 100.00, "A");
         assertEquals(processado, true);
     }
